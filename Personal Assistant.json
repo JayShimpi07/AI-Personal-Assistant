@@ -1,0 +1,911 @@
+{
+  "name": "Personal Assistant",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "6e55ccdc-3ac9-43e1-9900-eefca464488e",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        -752,
+        -128
+      ],
+      "id": "8c7f3e94-91d5-4102-aca5-c442998d3469",
+      "name": "Webhook",
+      "webhookId": "6e55ccdc-3ac9-43e1-9900-eefca464488e"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Current datetime: {{$now.toISO()}}\n\nUser request:\n{{ $json.body.message }}",
+        "options": {
+          "systemMessage": "=Current datetime: {{$now.toISO()}}\nTimezone: Asia/Kolkata\n\nYou are an AI Personal Assistant connected to tools including:\n- Google Calendar\n- Google Sheets\n- Gmail\n- Web search (if available)\n\nYou MUST use tools whenever information or actions require external data.\nNever ask the user for data that can be obtained using tools.\n\n=====================\nGENERAL RULES\n=====================\n- Always prefer tool usage over guessing.\n- Assume tools are available and permitted.\n- After using a tool, analyze the result and respond clearly.\n- Never say you lack access if a tool exists.\n- Give concise helpful answers.\n\n=====================\nDATE & TIME RULES\n=====================\n- Always interpret relative dates using the provided current datetime.\n- Never assume a different year.\n- Always use IST timezone.\n- Use RFC3339 format:\n  YYYY-MM-DDTHH:MM:SS+05:30\n- Never use UTC (Z).\n\n=====================\nGOOGLE CALENDAR RULES\n=====================\n- Use \"Create an event in Google Calendar\" when scheduling events.\n- Use \"Get many events in Google Calendar\" when user asks about schedule or meetings.\n- Default event duration = 1 hour unless specified.\n- Confirm success after creating events.\n\n=====================\nGOOGLE SHEETS RULES\n=====================\n- Use Google Sheets tools to read or write expense data.\n- Never ask the user to provide sheet data manually.\n- When asked about totals, sums, or analysis, retrieve rows first using tools.\n- Perform calculations using retrieved data.\n\n=====================\nGMAIL RULES\n=====================\n- Use Gmail tools when user asks about emails or inbox.\n- Summarize results clearly after retrieving emails.\n\n=====================\nTOOL PARAMETER RULES\n=====================\nWhen calling tools:\n- Limit must always be a NUMBER (not string).\n- Simplify must always be BOOLEAN true/false.\n- Use_Default_Reminders must be BOOLEAN.\n- Never send numbers or booleans as strings.\n\n=====================\nRESPONSE STYLE\n=====================\n- Be concise.\n- Confirm completed actions.\n- Provide summaries for retrieved data.\n\nWhen calling tools:\n- Simplify must always be boolean true or false.\nNever send boolean values as strings.\n\nWhen calling tools:\n\n- Limit must ALWAYS be a number (not string)\n- Simplify must ALWAYS be boolean true/false\n- Never send numbers or booleans as text"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        -48,
+        -128
+      ],
+      "id": "6480d3e7-363f-459a-ba6c-7e421845bd6a",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "model": "meta-llama/llama-4-scout-17b-16e-instruct",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGroq",
+      "typeVersion": 1,
+      "position": [
+        -96,
+        256
+      ],
+      "id": "8e52a2ce-4486-464b-8b19-4591815d607c",
+      "name": "Groq Chat Model",
+      "credentials": {
+        "groqApi": {
+          "id": "XKM7ZosjEAzPe612",
+          "name": "Groq account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sessionIdType": "customKey",
+        "sessionKey": "123456",
+        "contextWindowLength": 15
+      },
+      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "typeVersion": 1.3,
+      "position": [
+        48,
+        256
+      ],
+      "id": "52d86cae-1fc3-4aa7-82c5-0e6e99c9eaf6",
+      "name": "Simple Memory"
+    },
+    {
+      "parameters": {
+        "respondWith": "allIncomingItems",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.5,
+      "position": [
+        1024,
+        -128
+      ],
+      "id": "2937115c-68c0-4bdc-aa18-0fa6318e760e",
+      "name": "Respond to Webhook"
+    },
+    {
+      "parameters": {
+        "options": {
+          "gl": "in"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.toolSerpApi",
+      "typeVersion": 1,
+      "position": [
+        192,
+        256
+      ],
+      "id": "cdd0dcce-14a5-4452-9e20-03498dc056ef",
+      "name": "Google Search",
+      "credentials": {
+        "serpApi": {
+          "id": "HqeiXU0fx0XbjZrk",
+          "name": "SerpAPI account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "calendar": {
+          "__rl": true,
+          "value": "4dc6594473737978ae6d022bcdc5c1774598bf50b6b4480135e58631f6e2be05@group.calendar.google.com",
+          "mode": "list",
+          "cachedResultName": "Primary"
+        },
+        "start": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Start', ``, 'string') }}",
+        "end": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('End', ``, 'string') }}",
+        "useDefaultReminders": "={{ Boolean($fromAI('Use_Default_Reminders')) }}",
+        "additionalFields": {
+          "description": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Description', ``, 'string') }}"
+        }
+      },
+      "type": "n8n-nodes-base.googleCalendarTool",
+      "typeVersion": 1.3,
+      "position": [
+        1008,
+        336
+      ],
+      "id": "80f1ea2f-84b0-446a-99cc-b3029d3933ba",
+      "name": "Create an event in Google Calendar",
+      "credentials": {
+        "googleCalendarOAuth2Api": {
+          "id": "M4vmVfs1xJEUavAG",
+          "name": "Google Calendar account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "get",
+        "calendar": {
+          "__rl": true,
+          "value": "4dc6594473737978ae6d022bcdc5c1774598bf50b6b4480135e58631f6e2be05@group.calendar.google.com",
+          "mode": "list",
+          "cachedResultName": "Primary"
+        },
+        "eventId": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Event_ID', ``, 'string') }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleCalendarTool",
+      "typeVersion": 1.3,
+      "position": [
+        1152,
+        336
+      ],
+      "id": "1cedefd6-6f17-4923-af6f-50dbc93cbf74",
+      "name": "Get an event in Google Calendar",
+      "credentials": {
+        "googleCalendarOAuth2Api": {
+          "id": "M4vmVfs1xJEUavAG",
+          "name": "Google Calendar account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "content": "## Calender Events\n",
+        "height": 384,
+        "width": 688,
+        "color": 6
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        880,
+        160
+      ],
+      "typeVersion": 1,
+      "id": "bc5dab4c-28ad-4841-847f-22b2d2ddf45a",
+      "name": "Sticky Note"
+    },
+    {
+      "parameters": {
+        "operation": "getAll",
+        "calendar": {
+          "__rl": true,
+          "value": "4dc6594473737978ae6d022bcdc5c1774598bf50b6b4480135e58631f6e2be05@group.calendar.google.com",
+          "mode": "list",
+          "cachedResultName": "Primary"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleCalendarTool",
+      "typeVersion": 1.3,
+      "position": [
+        1312,
+        352
+      ],
+      "id": "4123c76b-1fb7-4280-b599-5b80be35c42d",
+      "name": "Get many events in Google Calendar",
+      "credentials": {
+        "googleCalendarOAuth2Api": {
+          "id": "M4vmVfs1xJEUavAG",
+          "name": "Google Calendar account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "get",
+        "messageId": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Message_ID', ``, 'string') }}",
+        "simple": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Simplify', ``, 'boolean') }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmailTool",
+      "typeVersion": 2.2,
+      "position": [
+        -1264,
+        448
+      ],
+      "id": "38dc654e-a360-4fc6-9e4f-f7ffdf29f871",
+      "name": "Get a message in Gmail",
+      "webhookId": "ab1bee2c-6e59-4b9a-9946-e220cd59c607",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "9aUnKNJYpPgwOAwb",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "getAll",
+        "limit": "={{ Number($fromAI('Limit') || 5) }}",
+        "simple": "={{ $fromAI('Simplify') === true || $fromAI('Simplify') === 'true' }}",
+        "filters": {},
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmailTool",
+      "typeVersion": 2.2,
+      "position": [
+        -1072,
+        464
+      ],
+      "id": "03ac707e-7ba3-4e4d-a439-2b840f6415aa",
+      "name": "Get many messages in Gmail",
+      "webhookId": "ab1bee2c-6e59-4b9a-9946-e220cd59c607",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "9aUnKNJYpPgwOAwb",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sendTo": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('To', ``, 'string') }}",
+        "subject": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Subject', ``, 'string') }}",
+        "emailType": "text",
+        "message": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Message', ``, 'string') }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmailTool",
+      "typeVersion": 2.2,
+      "position": [
+        -880,
+        464
+      ],
+      "id": "c25a5bc6-6371-4fd6-b979-1a4350be46ab",
+      "name": "Send a message in Gmail",
+      "webhookId": "ab1bee2c-6e59-4b9a-9946-e220cd59c607",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "9aUnKNJYpPgwOAwb",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "content": "## Gmail Tools\n",
+        "height": 320,
+        "width": 624,
+        "color": 6
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -1312,
+        352
+      ],
+      "typeVersion": 1,
+      "id": "874ae527-2778-4e13-a618-bd5c7df1bc99",
+      "name": "Sticky Note1"
+    },
+    {
+      "parameters": {},
+      "type": "@n8n/n8n-nodes-langchain.toolCalculator",
+      "typeVersion": 1,
+      "position": [
+        -576,
+        512
+      ],
+      "id": "eb472823-8fda-4129-9ae7-afacadd86973",
+      "name": "Calculator"
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "1U5avaw84QZyAVpbi-91D9dmTnAL7L-611EjXm0aQXSY",
+          "mode": "list",
+          "cachedResultName": "Finance Tracking",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1U5avaw84QZyAVpbi-91D9dmTnAL7L-611EjXm0aQXSY/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Sheet1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1U5avaw84QZyAVpbi-91D9dmTnAL7L-611EjXm0aQXSY/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "ID ": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('ID_', ``, 'string') }}",
+            "Date ": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Date_', ``, 'string') }}",
+            "Expense_Category": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Expense_Category', ``, 'string') }}",
+            "Expense": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Expense', ``, 'string') }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "ID ",
+              "displayName": "ID ",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Date ",
+              "displayName": "Date ",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Expense_Category",
+              "displayName": "Expense_Category",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Expense",
+              "displayName": "Expense",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheetsTool",
+      "typeVersion": 4.7,
+      "position": [
+        -432,
+        496
+      ],
+      "id": "c9b8a51a-808b-4b99-b42e-dd4a2760d495",
+      "name": "Append row in sheet in Google Sheets",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "a2yidAaoeqOJWQVc",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "content": "## Expense Tracking\n\n",
+        "height": 304,
+        "width": 528,
+        "color": 6
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -624,
+        368
+      ],
+      "typeVersion": 1,
+      "id": "452a26d4-bee1-484d-8c1d-b1debdfc3b82",
+      "name": "Sticky Note2"
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "1U5avaw84QZyAVpbi-91D9dmTnAL7L-611EjXm0aQXSY",
+          "mode": "list",
+          "cachedResultName": "Finance Tracking",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1U5avaw84QZyAVpbi-91D9dmTnAL7L-611EjXm0aQXSY/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Sheet1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1U5avaw84QZyAVpbi-91D9dmTnAL7L-611EjXm0aQXSY/edit#gid=0"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheetsTool",
+      "typeVersion": 4.7,
+      "position": [
+        -272,
+        496
+      ],
+      "id": "41e63686-55ac-43ae-a1ae-156cc7d52b78",
+      "name": "Get row(s) in sheet in Google Sheets",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "d4SzKekeB6seMS8J",
+          "name": "Google Sheets account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "folderId": "default",
+        "title": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Title', ``, 'string') }}"
+      },
+      "type": "n8n-nodes-base.googleDocsTool",
+      "typeVersion": 2,
+      "position": [
+        400,
+        432
+      ],
+      "id": "e02d23a0-f090-4141-9292-767fc94f05c3",
+      "name": "Create a document in Google Docs",
+      "credentials": {
+        "googleDocsOAuth2Api": {
+          "id": "C0PH3jceTeHI3bQu",
+          "name": "Google Docs account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "documentURL": "={{ $fromAI('Doc_ID_or_URL', '').match(/\\/d\\/([a-zA-Z0-9_-]+)/)?.[1] }}",
+        "simple": "={{ Boolean($fromAI('Simplify') ?? true) }}",
+        "actionsUi": {
+          "actionFields": [
+            {
+              "action": "insert",
+              "text": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('actionFields0_Text', ``, 'string') }}"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.googleDocsTool",
+      "typeVersion": 2,
+      "position": [
+        560,
+        432
+      ],
+      "id": "9b7197a3-bfe2-4bdf-b2bc-ada6c09b8859",
+      "name": "Update a document in Google Docs",
+      "credentials": {
+        "googleDocsOAuth2Api": {
+          "id": "C0PH3jceTeHI3bQu",
+          "name": "Google Docs account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "get",
+        "documentURL": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Doc_ID_or_URL', ``, 'string') }}"
+      },
+      "type": "n8n-nodes-base.googleDocsTool",
+      "typeVersion": 2,
+      "position": [
+        720,
+        432
+      ],
+      "id": "9965c345-a1f5-4f7d-8ba7-ce0218ad5fbd",
+      "name": "Get a document in Google Docs",
+      "credentials": {
+        "googleDocsOAuth2Api": {
+          "id": "C0PH3jceTeHI3bQu",
+          "name": "Google Docs account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "content": "## Notes Tool",
+        "height": 224,
+        "width": 480,
+        "color": 6
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        352,
+        384
+      ],
+      "typeVersion": 1,
+      "id": "6d962eec-d018-4b5e-88dc-50c95848afce",
+      "name": "Sticky Note3"
+    },
+    {
+      "parameters": {
+        "task": "MDY2NzY4NzQ1NjgzMjYxODA4MDg6MDow",
+        "title": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Title', ``, 'string') }}",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.googleTasksTool",
+      "typeVersion": 1,
+      "position": [
+        -208,
+        832
+      ],
+      "id": "9bdca89d-aeb2-475d-bc57-fd1fe2afec5a",
+      "name": "Create a task in Google Tasks",
+      "credentials": {
+        "googleTasksOAuth2Api": {
+          "id": "nBsRjKhVpe5dxZUG",
+          "name": "Google Tasks account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "get",
+        "task": "MDY2NzY4NzQ1NjgzMjYxODA4MDg6MDow",
+        "taskId": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Task_ID', ``, 'string') }}"
+      },
+      "type": "n8n-nodes-base.googleTasksTool",
+      "typeVersion": 1,
+      "position": [
+        -32,
+        848
+      ],
+      "id": "4e0c5e25-56d1-416b-b833-9a71c3b16233",
+      "name": "Get a task in Google Tasks",
+      "credentials": {
+        "googleTasksOAuth2Api": {
+          "id": "nBsRjKhVpe5dxZUG",
+          "name": "Google Tasks account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "getAll",
+        "task": "MDY2NzY4NzQ1NjgzMjYxODA4MDg6MDow",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.googleTasksTool",
+      "typeVersion": 1,
+      "position": [
+        144,
+        832
+      ],
+      "id": "4833b9d7-368f-40da-934b-a70207f1f9e8",
+      "name": "Get many tasks in Google Tasks",
+      "credentials": {
+        "googleTasksOAuth2Api": {
+          "id": "nBsRjKhVpe5dxZUG",
+          "name": "Google Tasks account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "delete",
+        "task": "MDY2NzY4NzQ1NjgzMjYxODA4MDg6MDow",
+        "taskId": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Task_ID', ``, 'string') }}"
+      },
+      "type": "n8n-nodes-base.googleTasksTool",
+      "typeVersion": 1,
+      "position": [
+        304,
+        848
+      ],
+      "id": "b0a47be0-b75f-4238-8b32-8865714f87a0",
+      "name": "Delete a task in Google Tasks",
+      "credentials": {
+        "googleTasksOAuth2Api": {
+          "id": "nBsRjKhVpe5dxZUG",
+          "name": "Google Tasks account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "content": "## Task Tools",
+        "height": 304,
+        "width": 736,
+        "color": 6
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -288,
+        720
+      ],
+      "typeVersion": 1,
+      "id": "f2c7f5ac-e8d9-42b6-a6a8-d5be38d3c426",
+      "name": "Sticky Note4"
+    }
+  ],
+  "pinData": {
+    "Webhook": [
+      {
+        "json": {
+          "headers": {
+            "host": "jayshimpi07.app.n8n.cloud",
+            "user-agent": "python-requests/2.32.5",
+            "content-length": "52",
+            "accept": "*/*",
+            "accept-encoding": "gzip, br",
+            "cdn-loop": "cloudflare; loops=1; subreqs=1",
+            "cf-connecting-ip": "2402:3a80:45ff:763c:3d0a:1590:b726:d018",
+            "cf-ew-via": "15",
+            "cf-ipcountry": "IN",
+            "cf-ray": "9d0da6f7973206b8-MAA",
+            "cf-visitor": "{\"scheme\":\"https\"}",
+            "cf-worker": "n8n.cloud",
+            "content-type": "application/json",
+            "x-forwarded-for": "2402:3a80:45ff:763c:3d0a:1590:b726:d018, 162.158.54.241",
+            "x-forwarded-host": "jayshimpi07.app.n8n.cloud",
+            "x-forwarded-port": "443",
+            "x-forwarded-proto": "https",
+            "x-forwarded-server": "traefik-prod-users-gwc-115-6cf9b79df4-2c5pv",
+            "x-is-trusted": "yes",
+            "x-real-ip": "2402:3a80:45ff:763c:3d0a:1590:b726:d018"
+          },
+          "params": {},
+          "query": {},
+          "body": {
+            "message": "Summarize my top 3 latest mails"
+          },
+          "webhookUrl": "https://jayshimpi07.app.n8n.cloud/webhook-test/6e55ccdc-3ac9-43e1-9900-eefca464488e",
+          "executionMode": "test"
+        }
+      }
+    ]
+  },
+  "connections": {
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Groq Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Simple Memory": {
+      "ai_memory": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Search": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create an event in Google Calendar": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get an event in Google Calendar": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get many events in Google Calendar": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get a message in Gmail": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get many messages in Gmail": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send a message in Gmail": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Calculator": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Append row in sheet in Google Sheets": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get row(s) in sheet in Google Sheets": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create a document in Google Docs": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Update a document in Google Docs": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get a document in Google Docs": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create a task in Google Tasks": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get a task in Google Tasks": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get many tasks in Google Tasks": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Delete a task in Google Tasks": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false
+  },
+  "versionId": "ad0fc594-831c-4982-9a18-d5aba72840eb",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "e2095596c6164264308ab66633e3c4d96d5e9b202ebbc11c7af30696a3a7ec45"
+  },
+  "id": "cCTXn8Fm6Qq5ROI1",
+  "tags": []
+}

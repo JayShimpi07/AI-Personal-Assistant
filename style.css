@@ -1,0 +1,160 @@
+/* ===== FINAL STREAMLIT ROOT FIX ===== */
+
+/* remove white bottom area completely */
+html, body {
+    margin: 0;
+    padding: 0;
+    overflow-x: hidden;
+    background: #020617 !important;
+}
+
+/* remove streamlit spacing */
+[data-testid="stAppViewContainer"] {
+    background: #020617 !important;
+}
+
+/* IMPORTANT: remove auto bottom padding */
+.block-container {
+    padding-bottom: 0rem !important;
+}
+
+/* remove phantom white section */
+[data-testid="stBottomBlockContainer"] {
+    display: none !important;
+}
+/* ===============================
+   GLOBAL DARK THEME
+================================ */
+
+html, body, [data-testid="stAppViewContainer"] {
+    background: #020617 !important;
+    color: #e5e7eb !important;
+    height: 100%;
+}
+
+/* Remove Streamlit white areas */
+[data-testid="stHeader"],
+[data-testid="stToolbar"] {
+    background: transparent !important;
+}
+
+/* Main container */
+.main {
+    background: transparent !important;
+}
+
+/* Remove padding issues */
+.block-container {
+    padding-top: 1rem !important;
+    padding-bottom: 90px !important;
+    max-width: 1200px;
+}
+
+/* ===============================
+   HEADER
+================================ */
+
+.header {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.header h1 {
+    font-size: 42px;
+    color: white;
+}
+
+.header p {
+    color: #9ca3af;
+    margin-top: -10px;
+}
+
+/* ===============================
+   FEATURE GRID
+================================ */
+
+.feature-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 18px;
+    margin-top: 20px;
+}
+
+.feature-card {
+    background: linear-gradient(145deg,#0f172a,#020617);
+    padding: 18px;
+    border-radius: 14px;
+    text-align: center;
+    font-weight: 500;
+    color: #e5e7eb;
+    border: 1px solid rgba(255,255,255,0.06);
+    transition: 0.3s ease;
+}
+
+.feature-card:hover {
+    transform: translateY(-3px);
+    border-color: #3b82f6;
+}
+
+/* ===============================
+   CHAT MESSAGES FIX
+================================ */
+
+/* assistant message */
+[data-testid="stChatMessage"]:has(div[data-testid="chatAvatarIcon-assistant"]) {
+    background: #0f172a !important;
+    color: #e5e7eb !important;
+    border-radius: 14px;
+}
+
+/* user message */
+[data-testid="stChatMessage"]:has(div[data-testid="chatAvatarIcon-user"]) {
+    background: #1f2937 !important;
+    color: white !important;
+    border-radius: 14px;
+}
+
+/* message text */
+[data-testid="stChatMessage"] p,
+[data-testid="stChatMessage"] span,
+[data-testid="stChatMessage"] div {
+    color: #e5e7eb !important;
+    font-size: 15px;
+    line-height: 1.6;
+}
+
+/* glass effect */
+[data-testid="stChatMessage"] {
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255,255,255,0.05);
+}
+
+/* ===============================
+   CHAT INPUT (FIXED BOTTOM)
+================================ */
+
+
+[data-testid="stChatInput"] {
+    position: fixed;
+    bottom: 10px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 70%;
+    max-width: 900px;
+    background: #020617 !important;
+    padding: 10px;
+    border-radius: 14px;
+    border: 1px solid rgba(255,255,255,0.08);
+    z-index: 9999;
+}
+
+/* input box */
+textarea {
+    background: #0f172a !important;
+    color: white !important;
+}
+
+/* remove white scroll areas */
+section.main > div {
+    background: transparent !important;
+}
