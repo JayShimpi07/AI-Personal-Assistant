@@ -1,62 +1,37 @@
-/* ===== FINAL STREAMLIT ROOT FIX ===== */
-
-/* remove white bottom area completely */
-html, body {
-    margin: 0;
-    padding: 0;
-    overflow-x: hidden;
-    background: #020617 !important;
-}
-
-/* remove streamlit spacing */
-[data-testid="stAppViewContainer"] {
-    background: #020617 !important;
-}
-
-/* IMPORTANT: remove auto bottom padding */
-.block-container {
-    padding-bottom: 0rem !important;
-}
-
-/* remove phantom white section */
-[data-testid="stBottomBlockContainer"] {
-    display: none !important;
-}
-/* ===============================
+/* =====================================================
    GLOBAL DARK THEME
-================================ */
+===================================================== */
 
 html, body, [data-testid="stAppViewContainer"] {
-    background: #020617 !important;
+    background-color: #020617 !important;
     color: #e5e7eb !important;
-    height: 100%;
 }
 
-/* Remove Streamlit white areas */
-[data-testid="stHeader"],
+/* remove streamlit header + toolbar */
+header[data-testid="stHeader"],
 [data-testid="stToolbar"] {
     background: transparent !important;
 }
 
-/* Main container */
-.main {
-    background: transparent !important;
-}
-
-/* Remove padding issues */
+/* main container */
 .block-container {
+    max-width: 1100px;
     padding-top: 1rem !important;
-    padding-bottom: 90px !important;
-    max-width: 1200px;
+    padding-bottom: 120px !important; /* space for chat input */
 }
 
-/* ===============================
+/* remove white footer */
+footer {
+    visibility: hidden;
+}
+
+/* =====================================================
    HEADER
-================================ */
+===================================================== */
 
 .header {
     text-align: center;
-    margin-bottom: 20px;
+    margin-bottom: 25px;
 }
 
 .header h1 {
@@ -66,18 +41,18 @@ html, body, [data-testid="stAppViewContainer"] {
 
 .header p {
     color: #9ca3af;
-    margin-top: -10px;
+    margin-top: -8px;
 }
 
-/* ===============================
+/* =====================================================
    FEATURE GRID
-================================ */
+===================================================== */
 
 .feature-grid {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
     gap: 18px;
-    margin-top: 20px;
+    margin-top: 25px;
 }
 
 .feature-card {
@@ -86,75 +61,118 @@ html, body, [data-testid="stAppViewContainer"] {
     border-radius: 14px;
     text-align: center;
     font-weight: 500;
-    color: #e5e7eb;
     border: 1px solid rgba(255,255,255,0.06);
-    transition: 0.3s ease;
+    transition: all 0.25s ease;
 }
 
 .feature-card:hover {
-    transform: translateY(-3px);
+    transform: translateY(-4px);
     border-color: #3b82f6;
 }
 
-/* ===============================
-   CHAT MESSAGES FIX
-================================ */
+/* =====================================================
+   CHAT MESSAGE STYLING
+===================================================== */
 
-/* assistant message */
-[data-testid="stChatMessage"]:has(div[data-testid="chatAvatarIcon-assistant"]) {
+/* assistant bubble */
+[data-testid="stChatMessage"]:has([data-testid="chatAvatarIcon-assistant"]) {
     background: #0f172a !important;
-    color: #e5e7eb !important;
     border-radius: 14px;
 }
 
-/* user message */
-[data-testid="stChatMessage"]:has(div[data-testid="chatAvatarIcon-user"]) {
+/* user bubble */
+[data-testid="stChatMessage"]:has([data-testid="chatAvatarIcon-user"]) {
     background: #1f2937 !important;
-    color: white !important;
     border-radius: 14px;
 }
 
 /* message text */
-[data-testid="stChatMessage"] p,
-[data-testid="stChatMessage"] span,
-[data-testid="stChatMessage"] div {
+[data-testid="stChatMessage"] * {
     color: #e5e7eb !important;
     font-size: 15px;
     line-height: 1.6;
 }
+/* =====================================================
+   FINAL CHAT INPUT CENTER FIX
+===================================================== */
 
-/* glass effect */
-[data-testid="stChatMessage"] {
-    backdrop-filter: blur(10px);
-    border: 1px solid rgba(255,255,255,0.05);
+/* Remove Streamlit bottom white layer */
+[data-testid="stBottomBlockContainer"] {
+    background: transparent !important;
+    padding: 0 !important;
 }
 
-/* ===============================
-   CHAT INPUT (FIXED BOTTOM)
-================================ */
-
-
-[data-testid="stChatInput"] {
-    position: fixed;
-    bottom: 10px;
-    left: 50%;
-    transform: translateX(-50%);
-    width: 70%;
-    max-width: 900px;
-    background: #020617 !important;
-    padding: 10px;
-    border-radius: 14px;
-    border: 1px solid rgba(255,255,255,0.08);
+/* Center the chat input container */
+div[data-testid="stChatInput"] {
+    position: fixed !important;
+    bottom: 20px;
+    left: 0;
+    right: 0;
+    width: 100%;
+    display: flex !important;
+    justify-content: center !important;
+    background: transparent !important;
     z-index: 9999;
 }
 
-/* input box */
-textarea {
-    background: #0f172a !important;
-    color: white !important;
+/* REAL WIDTH CONTROL */
+div[data-testid="stChatInput"] > div {
+    width: 800px !important;      /* ⭐ change size here */
+    max-width: 90vw !important;
 }
 
-/* remove white scroll areas */
-section.main > div {
-    background: transparent !important;
+/* Text area */
+div[data-testid="stChatInput"] textarea {
+    background: #0f172a !important;
+    color: #ffffff !important;
+    border-radius: 14px !important;
+    border: 1px solid #334155 !important;
+    padding: 14px !important;
+}
+
+/* Send button */
+div[data-testid="stChatInput"] button {
+    background: #2563eb !important;
+    border-radius: 10px !important;
+}
+
+/* Remove extra spacing below page */
+.block-container {
+    padding-bottom: 80px !important;
+}
+/* ======================================
+   MODERN SEND BUTTON STYLE
+====================================== */
+
+/* Button container */
+div[data-testid="stChatInput"] button {
+    background: linear-gradient(135deg, #3b82f6, #2563eb) !important;
+    border-radius: 12px !important;
+    height: 52px !important;
+    width: 42px !important;
+    margin-left: 8px !important;
+    border: none !important;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    transition: all 0.25s ease;
+    box-shadow: 0 4px 14px rgba(37, 99, 235, 0.35);
+}
+
+/* Hover effect */
+div[data-testid="stChatInput"] button:hover {
+    transform: scale(1.08);
+    box-shadow: 0 6px 18px rgba(59, 130, 246, 0.6);
+}
+
+/* Click effect */
+div[data-testid="stChatInput"] button:active {
+    transform: scale(0.95);
+}
+
+/* Arrow icon color */
+div[data-testid="stChatInput"] button svg {
+    color: white !important;
 }

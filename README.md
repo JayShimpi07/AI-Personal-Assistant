@@ -151,6 +151,12 @@ AI executes actions and returns confirmation response.
 
 ![Workflow Preview](assets/workflow.png)
 ---
+# 🎥 Demo Video
+
+Watch the AI Productivity Agent in action — showcasing how the LLM agent automatically manages emails, tasks, calendar events, and productivity workflows using n8n automation.
+
+👉 Demo Video: https://drive.google.com/file/d/1x2fBzjcAgutefq8NI6yukRacnOB7XXhP/view?usp=sharing
+
 
 # 📦 Setup Instructions
 

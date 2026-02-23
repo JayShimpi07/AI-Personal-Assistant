@@ -2,7 +2,7 @@ import streamlit as st
 import requests
 
 # ==============================
-# PAGE CONFIG (MUST BE FIRST)
+# PAGE CONFIG (FIRST)
 # ==============================
 st.set_page_config(
     page_title="Personal AI Assistant",
@@ -16,14 +16,6 @@ st.set_page_config(
 with open("style.css", encoding="utf-8") as f:
     st.markdown(f"<style>{f.read()}</style>", unsafe_allow_html=True)
 
-st.markdown(
-    """
-    <style>
-    footer {visibility: hidden;}
-    </style>
-    """,
-    unsafe_allow_html=True
-)
 # ==============================
 # HEADER
 # ==============================
@@ -35,25 +27,23 @@ st.markdown("""
 """, unsafe_allow_html=True)
 
 # ==============================
-# FEATURES GRID
+# FEATURES
 # ==============================
 st.markdown("""
 <div class="feature-grid">
-
 <div class="feature-card">🧠 Answer intelligent questions</div>
 <div class="feature-card">📅 Manage calendar events</div>
 <div class="feature-card">📧 Read & send emails</div>
 <div class="feature-card">✅ Manage tasks</div>
 <div class="feature-card">📝 Create notes</div>
 <div class="feature-card">💰 Track expenses</div>
-
 </div>
 """, unsafe_allow_html=True)
 
 st.divider()
 
 # ==============================
-# CHAT HISTORY INIT
+# CHAT MEMORY
 # ==============================
 if "messages" not in st.session_state:
     st.session_state.messages = []
@@ -61,14 +51,11 @@ if "messages" not in st.session_state:
 st.subheader("💬 Chat")
 
 # ==============================
-# DISPLAY CHAT HISTORY
+# SHOW CHAT HISTORY
 # ==============================
 for message in st.session_state.messages:
-    role = message.get("role", "assistant")
-    content = message.get("content", "")
-
-    with st.chat_message(role):
-        st.markdown(content)
+    with st.chat_message(message["role"]):
+        st.markdown(message["content"])
 
 # ==============================
 # CHAT INPUT
@@ -76,7 +63,7 @@ for message in st.session_state.messages:
 user_message = st.chat_input("Ask your assistant anything...")
 
 # ==============================
-# SAFE RESPONSE PARSER
+# RESPONSE PARSER
 # ==============================
 def extract_ai_response(resp):
     try:
@@ -100,18 +87,15 @@ def extract_ai_response(resp):
 # ==============================
 if user_message:
 
-    # show user message
-    with st.chat_message("user"):
-        st.markdown(user_message)
-
     st.session_state.messages.append(
         {"role": "user", "content": user_message}
     )
 
-    # assistant response
+    with st.chat_message("user"):
+        st.markdown(user_message)
+
     with st.chat_message("assistant"):
         with st.spinner("Assistant is thinking..."):
-
             try:
                 response = requests.post(
                     "https://jayshimpi07.app.n8n.cloud/webhook/6e55ccdc-3ac9-43e1-9900-eefca464488e",
